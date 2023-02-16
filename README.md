@@ -2,7 +2,7 @@
 
 Dobrý den,
 
-pokusil jsem se udělat ve workbanchi, celý projekt na SQL, ale vždycky se mi něco zhroutilo... Věřím, že ještě po pár hodinách bych to dokončil. Ale bohužel mě tlačí čáš.
+pokusil jsem se udělat ve workbanch, celý projekt na SQL, ale vždycky se mi něco zhroutilo... Věřím, že ještě po pár hodinách bych to dokončil. Ale bohužel mě tlačí čáš.
 Ve složce můžete vidět txt soubor s návrhem, taková základní postup podle, kterého jsem se chtěl držet.
 Přiložil jsem obrázky, jako důkaz, že jsem se opravdu o to pokoušel.
 A hlavně popravdě v SQL dost plavu.
