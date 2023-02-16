@@ -1,0 +1,73 @@
+b)  Datový model
+
+1. Vytvořte jednoduchý datový model obsahující 4 základní entity: Klient, Účet, Transakce a Balance.
+
+2. Naznačte základní sadu atributů v jednotlivých tabulkách, kardinalitu, primární/cizí klíče, apod.
+
+3. V tabulce transakcí se bude vyskytovat TYP_TRANSAKCE, který bude odkazovat do číselníku typů transakcí.
+
+4. Předpokládejte, že tabulka BALANCE obsahuje denní snímky nesoucí informaci o výši jednotlivých komponent pohledávky (jistina, úrok, poplatky) na konci dne.
+
+5. Postavte dotaz, který vybere všechny klienty (např. id_klient, jméno a příjmení) pro něž bude platit, že suma jistin všech jejich účtů na konci měsíce bude větší než číslo c.
+
+6. Postavte dotaz, který zobrazí 10 klientů s maximální celkovou výší pohledávky (suma všech pohledávek klienta) k ultimu měsíce a tuto na konci řádku vždy zobrazte.
+
+
+Atributy a kardinality:
+Klient: id_klient (PK), jmeno, prijmeni
+Účet: id_ucet (PK), id_klient (FK), cislo_ucet, datum_zalozeni
+Transakce: id_transakce (PK), id_ucet (FK), typ_transakce (FK), castka, datum
+Typ_transakce: id_typ_transakce (PK), nazev_typu
+Balance: id_balance (PK), id_ucet (FK), datum, jistina, urok, poplatky
+Kardinalita:
+
+Klient může mít 0 až N účtů (1:N)
+Účet musí být přiřazen právě jednomu klientovi (N:1)
+Účet může mít 0 až N transakcí (1:N)
+Každá transakce musí být přiřazena právě jednomu účtu (N:1)
+Každá transakce musí být typu, který se nachází v tabulce Typ_transakce (N:1)
+Každý účet může mít 0 až N záznamů v tabulce Balance (1:N)
+
+----------------------------------------
+Klient (id_klient, jmeno, prijmeni, adresa, email, telefon)
+primární klíč: id_klient¨
+
+Účet (id_ucet, id_klient, cislo, nazev, datum_vzniku)
+primární klíč: id_ucet
+cizí klíč: id_klient
+
+Transakce (id_transakce, id_ucet, datum, castka, typ_transakce)
+primární klíč: id_transakce
+cizí klíč: id_ucet, typ_transakce
+
+Balance (id_balance, id_ucet, datum, jistina, urok, poplatky)
+primární klíč: id_balance
+cizí klíč: id_ucet
+
+Typ_transakce (id_typ_transakce, nazev)
+primární klíč: id_typ_transakce
+
+
+5.
+Dotaz číslo 5.
+
+SELECT k.id_klient, k.jmeno, k.prijmeni
+FROM Klienti k
+JOIN (
+    SELECT id_klient, SUM(jistina) AS celkova_suma
+    FROM Ucty
+    WHERE YEAR(datum) = YEAR(GETDATE()) AND MONTH(datum) = MONTH(GETDATE())
+    GROUP BY id_klient
+) u ON k.id_klient = u.id_klient
+WHERE u.celkova_suma > 50000 (ČÍSLO C)
+
+6.
+SELECT TOP 10 
+FROM Klient k, k.id_klient, k.jmeno, k.prijmeni, SUM(jistina + urok + poplatky) AS celkova_pohledavka
+JOIN Ucet u ON k.id_klient = u.id_klient
+JOIN Balance b ON u.id_ucet = b.id_ucet
+WHERE b.datum = (SELECT MAX(datum) FROM Balance WHERE id_ucet = u.id_ucet)
+GROUP BY k.id_klient, k.jmeno, k.prijmeni
+ORDER BY celkova_pohledavka DESC
+
+
